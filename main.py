@@ -7,30 +7,33 @@ from rclpy.node import Node
 from visualization_msgs.msg import Marker, MarkerArray
 
 class Project(Node):
-    super().__init__('navigation_node')
-    occupancy_grid: np.ndarray = np.ndarray((100, 100), )
 
-    OCCUPIED = 1
-    FREE = 2
-    UNEXPLORED = 3
-    HEIGHT, WIDTH = occupancy_grid.shape
-    RESOLUTION = 0.1
-    """
-        Directions:
-        (0, 1): Right
-        (1, 0): Down
-        (0, -1): Left
-        (-1, 0): Up
-        (1, 1): Down-Right
-        (1, -1): Down-Left
-        (-1, 1): Up-Right
-        (-1, -1): Up-Left
-    """
-    directions = [(0, 1), (1, 0), (0, -1), (-1, 0),
-                  (1, 1), (1, -1), (-1, 1), (-1, -1)]
 
-    robot_pose = ()
-
+    def __init__(self):
+        super().__init__('navigation_node')
+        occupancy_grid: np.ndarray = np.ndarray((100, 100), )
+    
+        OCCUPIED = 1
+        FREE = 2
+        UNEXPLORED = 3
+        HEIGHT, WIDTH = occupancy_grid.shape
+        RESOLUTION = 0.1
+        """
+            Directions:
+            (0, 1): Right
+            (1, 0): Down
+            (0, -1): Left
+            (-1, 0): Up
+            (1, 1): Down-Right
+            (1, -1): Down-Left
+            (-1, 1): Up-Right
+            (-1, -1): Up-Left
+        """
+        directions = [(0, 1), (1, 0), (0, -1), (-1, 0),
+                      (1, 1), (1, -1), (-1, 1), (-1, -1)]
+    
+        robot_pose = ()
+    
 
     def some_callback(self):
         points = self.generate_prm()
