@@ -27,7 +27,7 @@ class ExplorationService(Node):
         prm_nodes = self.generate_prm()
         gain_nodes = self.compute_information_gain(prm_nodes)
 
-        best_node = gain_nodes[0]
+        best_node = gain_nodes[0][0]
 
         response.best_node = [best_node[0], best_node[1]]
         return response
