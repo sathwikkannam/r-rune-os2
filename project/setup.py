@@ -25,7 +25,8 @@ setup(
     entry_points={
         'console_scripts': [
             'nav_srv = project.navigation:main',
-            'explore_srv = project.exploration:main'
+            'explore_srv = project.exploration:main',
+            'explorer = project.explorer_navigator:main',
         ],
     },
 )
