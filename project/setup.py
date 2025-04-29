@@ -12,12 +12,6 @@ setup(
         ('share/' + package_name, ['package.xml']),
     ],
 
-    package_data= {
-        package_name : [
-            'srv/*.srv'
-        ]
-    },
-
     install_requires=['setuptools'],
     zip_safe=True,
     maintainer='sathwik',

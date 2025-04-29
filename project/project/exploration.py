@@ -131,7 +131,8 @@ class ExplorationService(Node):
         :param node: A node in the occupancy_grid
         :return: whether the node is within the limits of the map, and the node is free (not an obstacle)
         """
-        return node[0] in range(self.height) and node[1] in range(self.width) and self.occupancy_grid[node] not in (self.OCCUPIED, self.UNEXPLORED)
+        return node[0] in range(self.height) and node[1] in range(self.width) and self.occupancy_grid[node] not in (
+            self.OCCUPIED, self.UNEXPLORED)
 
 
 def main():
