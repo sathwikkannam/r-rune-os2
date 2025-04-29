@@ -9,9 +9,9 @@ from project.srv import GetBestNodeForExploration
 
 
 class ExplorationService(Node):
-    OCCUPIED = 1
+    OCCUPIED = 100
     FREE = 2
-    UNEXPLORED = 3
+    UNEXPLORED = -1
     occupancy_grid, height, width, resolution = None, None, None, None
 
     def __int__(self):
@@ -44,7 +44,7 @@ class ExplorationService(Node):
             x = random.randint(0, self.height - 1)
             y = random.randint(0, self.width - 1)
 
-            if self.occupancy_grid[x, y] == self.FREE:
+            if self.occupancy_grid[x, y] not in (self.OCCUPIED, self.UNEXPLORED):
                 nodes.add((x, y))
 
         return list(nodes)
@@ -132,7 +132,7 @@ class ExplorationService(Node):
         :param node: A node in the occupancy_grid
         :return: whether the node is within the limits of the map, and the node is free (not an obstacle)
         """
-        return node[0] in range(self.height) and node[1] in range(self.width) and self.occupancy_grid[node] == self.FREE
+        return node[0] in range(self.height) and node[1] in range(self.width) and self.occupancy_grid[node] not in (self.OCCUPIED, self.UNEXPLORED)
 
 
 def main():
