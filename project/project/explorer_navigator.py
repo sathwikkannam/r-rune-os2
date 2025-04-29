@@ -1,13 +1,14 @@
 import rclpy
 from rclpy.node import Node
 from rclpy.action import ActionClient
-from actionlib_msgs.msg import GoalStatus as ActionGoalStatus
-
+#from rclpy.action import GoalResponse, GoalStatus as ActionGoalStatus
+from action_msgs.msg import GoalStatus as ActionGoalStatus
+#from actionlib_msgs.msg import GoalStatus as ActionGoalStatus
 from nav_msgs.msg import OccupancyGrid
 from geometry_msgs.msg import PoseWithCovarianceStamped, PoseStamped, Pose
 from nav2_msgs.action import NavigateToPose
 from my_services.srv import PathPlanner, GetBestNodeForExploration
-
+from nav_msgs.msg import Odometry
 
 class ExplorerNavigator(Node):
 
@@ -39,8 +40,8 @@ class ExplorerNavigator(Node):
         )
 
         self.robot_pose_sub = self.create_subscription(
-            PoseWithCovarianceStamped,
-            '/pose',
+            Odometry,
+            '/odom',
             self.robot_pose_callback,
             10
         )
@@ -97,20 +98,20 @@ class ExplorerNavigator(Node):
     def robot_pose_callback(self, msg):
         self.robot_pose = msg.pose.pose # This is Pose Data.
 
-        if self.current_map_resolution and self.current_map_origin:
-            new_grid_pose = self.map_to_grid(
-                self.robot_pose.position.x,
-                self.robot_pose.position.y
-                # Z also exists, but we don't
-            )
+        #if self.current_map_resolution and self.current_map_origin:
+        new_grid_pose = self.map_to_grid(
+            self.robot_pose.position.x,
+            self.robot_pose.position.y
+            # Z also exists, but we don't
+        )
 
-            self.Z = self.robot_pose.position.z
+        self.Z = self.robot_pose.position.z
 
-            if new_grid_pose != self.current_grid_pose:
-                self.current_grid_pose = new_grid_pose
+        if new_grid_pose != self.current_grid_pose:
+            self.current_grid_pose = new_grid_pose
 
-                if self.state == 'WAITING_FOR_MAP_OR_POSE':
-                    self.state = 'IDLE'
+            if self.state == 'WAITING_FOR_MAP_OR_POSE':
+                self.state = 'IDLE'
 
     def map_callback(self, msg):
         # No condition, we just get a map whenever it wants.
@@ -153,8 +154,8 @@ class ExplorerNavigator(Node):
             self.state = 'IDLE'
 
     def trigger_navigation(self):
-        if self.current_grid_pose or not self.current_exploration_goal_grid:
-            self.get_logger().warn("Something missing in trigger_navigation")
+        if not self.current_grid_pose or not self.current_exploration_goal_grid:
+            self.get_logger().warn(f"Something missing in trigger_navigation Pose: {self.current_grid_pose}, Explore node: {self.current_exploration_goal_grid}")
             self.state = 'IDLE'
             return
 
