@@ -1,7 +1,7 @@
 import rclpy
 from rclpy.node import Node
 from rclpy.action import ActionClient
-from rclpy.action import GoalStatus as ActionGoalStatus
+from actionlib_msgs.msg import GoalStatus as ActionGoalStatus
 
 from nav_msgs.msg import OccupancyGrid
 from geometry_msgs.msg import PoseWithCovarianceStamped, PoseStamped, Pose
