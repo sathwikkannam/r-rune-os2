@@ -10,11 +10,14 @@ setup(
         ('share/ament_index/resource_index/packages',
             ['resource/' + package_name]),
         ('share/' + package_name, ['package.xml']),
-        ('share/' + package_name + '/srv/', [
-            'GetBestNodeForExploration.srv',
-            'PathPlanner.srv'
-        ]),
     ],
+
+    package_data= {
+        package_name : [
+            'srv/*.srv'
+        ]
+    },
+
     install_requires=['setuptools'],
     zip_safe=True,
     maintainer='sathwik',
@@ -29,4 +32,5 @@ setup(
             'explorer = project.explorer_navigator:main',
         ],
     },
+
 )
