@@ -1,4 +1,0 @@
-# srv/GetBestNodeForExploration.srv
-nav_msgs/OccupancyGrid map
----
-int32[] best_node
