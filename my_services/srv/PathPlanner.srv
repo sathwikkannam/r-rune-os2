@@ -1,0 +1,6 @@
+# srv/PathPlanner.srv
+nav_msgs/OccupancyGrid map
+int32[] start
+int32[] end
+---
+int32[] path
