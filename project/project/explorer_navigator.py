@@ -40,7 +40,7 @@ class ExplorerNavigator(Node):
 
         self.robot_pose_sub = self.create_subscription(
             PoseWithCovarianceStamped,
-            '/amcl_pose',
+            '/pose',
             self.robot_pose_callback,
             10
         )
