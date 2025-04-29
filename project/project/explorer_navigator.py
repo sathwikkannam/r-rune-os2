@@ -3,9 +3,11 @@ import rclpy
 from rclpy.node import Node
 from project.srv import PathPlanner
 from project.srv import GetBestNodeForExploration
+from rclpy.action import ActionClient
 from nav_msgs.msg import OccupancyGrid
-from geometry_msgs.msg import PoseWithCovarianceStamped
+from geometry_msgs.msg import PoseWithCovarianceStamped, PoseStamped
 from nav_msgs.msg import Odometry
+from nav2_msgs.action import NavigateToPose
 import inspect
 
 
@@ -23,10 +25,11 @@ class ExplorerNavigator(Node):
 
         self.state = 'IDLE'
 
-        self.map_sub = self.create_subscription(OccupancyGrid, '', self.map_callback, 10)
+        self.map_sub = self.create_subscription(OccupancyGrid, '/map', self.map_callback, 10)
         self.robot_pose_sub = self.create_subscription(OccupancyGrid, '/amcl_pose', self.robot_pose_callback, 10)
         self.navigation_client = self.create_client(PathPlanner, 'navigate')
         self.exploration_client = self.create_client(GetBestNodeForExploration, 'explore')
+        self.nav_to_pose_client = ActionClient(self, NavigateToPose, '/navigate_to_pose')
 
         while not self.navigation_client.wait_for_service(
                 timeout_sec=1.0) or not self.exploration_client.wait_for_service(timeout_sec=1.0):
@@ -104,10 +107,42 @@ class ExplorerNavigator(Node):
             self.trigger_exploration()
 
     def send_path_to_robot_driver(self, nav_path):
-        if not nav_path:
-            self.get_logger().warn(f'Got an empty in function {inspect.currentframe().f_code.co_name}')
+        if not nav_path or self.current_map:
+            self.get_logger().warn(f'Got nav_len: {nav_path} or map: {len(self.current_map)} in function {inspect.currentframe().f_code.co_name}')
             self.state = 'IDLE'
             return
+
+        robot_poses_for_path = []
+        for grid_point in nav_path:
+            map_x, map_y = self.grid_to_map(grid_point[0], grid_point[1])
+            pose = PoseStamped()
+            pose.header.frame_id = self.current_map.header.frame_id
+            pose.header.stamp = self.get_clock().now().to_msg()
+            pose.pose.position.x = map_x
+            pose.pose.position.y = map_y
+            pose.pose.orientation.w = 1.0
+            robot_poses_for_path.append(pose)
+
+        self.state = 'NAVIGATING'
+
+        for pose in robot_poses_for_path:
+            self.nav_to_pose_client.send_goal_async(pose)
+
+        self.state = 'IDLE'
+
+
+    def grid_to_map(self, grid_row, grid_col):
+        """
+        Here we need to scale the 2D matrix of the OccupancyGrid to actual points on the map frame.
+        :param grid_row:
+        :param grid_col:
+        :return:
+        """
+        info = self.current_map.info
+
+        map_x = info.origin.position.x + (grid_col + 0.5) * info.resolution
+        map_y = info.origin.position.y + (grid_row + 0.5) * info.resolution
+        return map_x, map_y
 
 
 def main(args=None):
