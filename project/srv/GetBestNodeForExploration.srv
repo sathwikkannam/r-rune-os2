@@ -1,4 +1,4 @@
 # srv/GetBestNodeForExploration.srv
-nav_msgs/OccupancyGrid maphttps://github.com/sathwikkannam/r-rune-os2/edit/main/project/srv/Explore.srv
+nav_msgs/OccupancyGrid map
 ---
 int32[] best_node
