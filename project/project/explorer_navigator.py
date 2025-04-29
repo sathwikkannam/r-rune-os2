@@ -1,8 +1,8 @@
 import rclpy
 
 from rclpy.node import Node
-from project.srv import PathPlanner
-from project.srv import GetBestNodeForExploration
+from my_services.srv import PathPlanner
+from my_services.srv import GetBestNodeForExploration
 from rclpy.action import ActionClient
 from nav_msgs.msg import OccupancyGrid
 from geometry_msgs.msg import PoseWithCovarianceStamped, PoseStamped
@@ -27,23 +27,33 @@ class ExplorerNavigator(Node):
 
         self.map_sub = self.create_subscription(OccupancyGrid, '/map', self.map_callback, 10)
         self.robot_pose_sub = self.create_subscription(OccupancyGrid, '/amcl_pose', self.robot_pose_callback, 10)
-        self.navigation_client = self.create_client(PathPlanner, 'navigate')
-        self.exploration_client = self.create_client(GetBestNodeForExploration, 'explore')
+        self.navigation_client = self.create_client(PathPlanner, '/navigate')
+        self.exploration_client = self.create_client(GetBestNodeForExploration, '/explore')
         self.nav_to_pose_client = ActionClient(self, NavigateToPose, '/navigate_to_pose')
 
         while not self.navigation_client.wait_for_service(
-                timeout_sec=1.0) or not self.exploration_client.wait_for_service(timeout_sec=1.0):
-            self.get_logger().info('Exploration and Navigation services are not available, waiting....')
+                timeout_sec=1.0):
+            self.get_logger().info('Navigation service are not available, waiting....')
+
+        while not self.exploration_client.wait_for_service(
+                timeout_sec=1.0):
+            self.get_logger().info('Exploration service are not available, waiting....')
+        
+        self.get_logger().info('Exploration and Navigation services are connected')
 
         self.timer = self.create_timer(1.0, self.constantly_explore)
-
+        self.timer = self.create_timer(5.0, self.show_state)
+        
     def constantly_explore(self):
         if self.state == 'IDLE':
             # Check if map and pose are available and trigger exploration
-            if self.current_map and self.robot_pose:
+            if self.current_map:
                 self.trigger_exploration()
             else:
                 self.state = 'WAITING_FOR_MAP_OR_POSE'
+    
+    def show_state(self):
+        self.get_logger().info(f"State: {self.state}")
 
     def robot_pose_callback(self, msg):
         pass
