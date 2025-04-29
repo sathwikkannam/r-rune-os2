@@ -1,11 +1,10 @@
+import rclpy
+from rclpy.node import Node
+
 import math
 import random
-
-import rclpy
-
-from rclpy.node import Node
 import numpy as np
-from project.srv import GetBestNodeForExploration
+from my_services.srv import GetBestNodeForExploration
 
 
 class ExplorationService(Node):
@@ -14,9 +13,9 @@ class ExplorationService(Node):
     UNEXPLORED = -1
     occupancy_grid, height, width, resolution = None, None, None, None
 
-    def __int__(self):
+    def __init__(self):
         super().__init__('exploration_service')
-        self.srv = self.create_service(GetBestNodeForExploration, 'explore', self.get_best_node_callback)
+        self.srv = self.create_service(GetBestNodeForExploration, '/explore', self.get_best_node_callback)
 
     def get_best_node_callback(self, request, response):
         self.width = request.map.info.width
