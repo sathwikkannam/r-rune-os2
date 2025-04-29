@@ -117,12 +117,15 @@ class ExplorationService(Node):
             ry = origin_y + step * self.resolution * math.sin(angle)
             col = int(rx / self.resolution)
             row = int(ry / self.resolution)
-            if not self.is_valid((row, col)):
+
+            if not row in range(self.height) and not col in range(self.width):
                 break
 
             val = self.occupancy_grid[row, col]
 
-            if val == self.UNEXPLORED:
+            if val == self.OCCUPIED:
+                break
+            elif val == self.UNEXPLORED:
                 count += 1
         return count
 
