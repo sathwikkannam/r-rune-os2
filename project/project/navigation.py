@@ -3,7 +3,7 @@ import rclpy
 from rclpy.node import Node
 import numpy as np
 import heapq
-from project.srv import PathPlanner
+from my_services.srv import PathPlanner
 
 
 class NavigationService(Node):
@@ -27,7 +27,7 @@ class NavigationService(Node):
 
     def __init__(self):
         super().__init__('navigation_service')
-        self.srv = self.create_service(PathPlanner, 'navigate', self.get_optimal_path_callback)
+        self.srv = self.create_service(PathPlanner, '/navigate', self.get_optimal_path_callback)
 
     def get_optimal_path_callback(self, request, response):
         """
