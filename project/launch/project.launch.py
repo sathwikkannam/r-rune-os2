@@ -26,16 +26,7 @@ def generate_launch_description():
         executable='explorer',
         name='explorer',
         output='screen',
-     )
-    # mapping_pub_node = Node(
-    #     package='project',
-    #     executable='', # Fill this
-    #     name='', # Fill this
-    #     output='screen',
-    # )
-
-    return LaunchDescription([
-        # mapping_pub_node,
+    )
 
     set_domain_id = SetEnvironmentVariable(
         name='ROS_DOMAIN_ID',

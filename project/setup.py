@@ -15,11 +15,9 @@ setup(
         # Add this line to install launch files:
         (os.path.join('share', package_name, 'launch'), glob('launch/*.py')),
     ],
-
     package_data={
         package_name: ['srv/*.srv']
     },
-
     install_requires=['setuptools'],
     zip_safe=True,
     maintainer='sathwik',
