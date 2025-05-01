@@ -1,4 +1,6 @@
 from setuptools import find_packages, setup
+import os
+from glob import glob
 
 package_name = 'project'
 
@@ -10,7 +12,13 @@ setup(
         ('share/ament_index/resource_index/packages',
             ['resource/' + package_name]),
         ('share/' + package_name, ['package.xml']),
+        # Add this line to install launch files:
+        (os.path.join('share', package_name, 'launch'), glob('launch/*.py')),
     ],
+
+    package_data={
+        package_name: ['srv/*.srv']
+    },
 
     install_requires=['setuptools'],
     zip_safe=True,
@@ -26,5 +34,5 @@ setup(
             'explorer = project.explorer_navigator:main',
         ],
     },
-
 )
+
